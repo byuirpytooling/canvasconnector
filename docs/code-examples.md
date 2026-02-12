@@ -1,38 +1,17 @@
 # Code Examples
 
-## Initial Setup
+> **Prerequisites**: Complete the [Setup](index.md#setup) in the getting started guide first.
 
-### 1. Create a `.env` file
-
-Create a `.env` file in your project root with your Canvas credentials:
-
-```plaintext
-# Canvas API Configuration
-CANVAS_TOKEN=your_canvas_api_token_here
-CANVAS_URL=https://byui.instructure.com
-TIMEZONE=America/Denver
-```
-
-**Getting your credentials:**
-
-- **CANVAS_TOKEN**: Canvas → Account → Settings → New Access Token
-- **CANVAS_URL**: Your institution's Canvas URL
-- **TIMEZONE**: Your IANA timezone (e.g., `America/Denver`, `America/New_York`)
-
-**Security**: Add `.env` to your `.gitignore` to keep your API token private.
-
-### 2. Setting Up the Client
+All examples assume you have a client initialized:
 
 ```python
 from canvasconnector import CanvasClient
 from dotenv import load_dotenv
 import os
 
-# Load environment variables from .env file
 load_dotenv()
-
 client = CanvasClient(
-    api_key=os.getenv("CANVAS_TOKEN"),
+    api_key=os.getenv("CANVAS_API_TOKEN"),
     canvas_url=os.getenv("CANVAS_URL"),
     timezone=os.getenv("TIMEZONE")
 )
@@ -43,9 +22,12 @@ client = CanvasClient(
 ```python
 from canvasconnector import get_courses_polars
 
+# Get all courses
+courses = get_courses_polars(client)
+
 # Get only current courses
-courses = get_courses_polars(client, current_only=True)
-print(courses)
+current_courses = get_courses_polars(client, current_only=True)
+print(current_courses)
 ```
 
 ## Fetching Assignments
@@ -73,12 +55,20 @@ all_assignments = get_assignments_all_courses(
 ```python
 from canvasconnector import get_upcoming_assignments
 
+# Get assignments due in the next 2 weeks
 upcoming = get_upcoming_assignments(
     client,
     courses["course_id"],
-    days=14  # Next 2 weeks
+    days=14
 )
 print(upcoming)
+
+# Get assignments due in the next week
+upcoming_week = get_upcoming_assignments(
+    client,
+    courses["course_id"],
+    days=7
+)
 ```
 
 ## Getting Peer Information
