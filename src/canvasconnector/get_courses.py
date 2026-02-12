@@ -5,8 +5,7 @@ import polars as pl
 
 
 def get_courses_raw(client: CanvasClient):
-    """
-        Get courses as a list of dictionaries.
+    """Get courses as a list of dictionaries.
 
         This function retrieves all courses for the authenticated user from the
         Canvas API and returns them as raw Python dictionaries with selected fields.
@@ -69,14 +68,14 @@ def get_courses_raw(client: CanvasClient):
 
 
 def get_courses_polars(client: CanvasClient, current_only: bool):
-    """
-        Get courses as a Polars DataFrame.
+    """Get courses as a Polars DataFrame.
 
         This function retrieves all courses for the authenticated user from the
         Canvas API and returns them as a Polars DataFrame for easy analysis.
 
         Args:
             client (CanvasClient): The Canvas API client instance.
+            current_only (bool): If True, only return courses from current term.
 
         Returns:
             pl.DataFrame: A Polars DataFrame with course data.
@@ -87,7 +86,7 @@ def get_courses_polars(client: CanvasClient, current_only: bool):
                 api_key="your_token",
                 canvas_url="https://byui.instructure.com"
             )
-            courses_df = get_courses_polars(client)
+            courses_df = get_courses_polars(client, current_only=True)
             print(courses_df.head())
     ```
     """

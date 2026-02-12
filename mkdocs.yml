@@ -1,11 +1,11 @@
-site_name: Example MkDocs Material Documentation for pypackage_template
-site_url: https://byuirpytooling.github.io/pypackage_template
+site_name: Canvas Connector - BYU-I Python Tooling
+site_url: https://byuirpytooling.github.io/canvasconnector
 theme:
   name: material
   icon:
-    logo: fontawesome/solid/wind
+    logo: fontawesome/solid/graduation-cap # or solid/book
   favicon: assets/favicon.ico
-  featuers:
+  features:
     - navigation.footer
   font:
     text: Merriweather Sans
@@ -16,8 +16,8 @@ theme:
       toggle:
         icon: material/weather-sunny
         name: Dark mode
-      primary: green
-      accent: deep purple
+      primary: blue
+      accent: red
 
     # Light Mode
     - scheme: default
@@ -25,7 +25,7 @@ theme:
         icon: material/weather-night
         name: Light mode
       primary: blue
-      accent: deep orange
+      accent: light blue
 
 markdown_extensions:
   - attr_list
@@ -47,6 +47,8 @@ markdown_extensions:
       alternate_style: true
   - admonition
   - pymdownx.details
+  - toc:
+      toc_depth: 2 # Add this line - only show H1 and H2 in TOC
 
 plugins:
   - search
@@ -58,12 +60,16 @@ plugins:
           paths: [src]
           options:
             show_source: false
+            heading_level: 3 # Add this
+            show_root_toc_entry: false # Add this - hides from TOC
+
+extra_css:
+  - stylesheets/extra.css
 
 extra:
   social:
     - icon: fontawesome/brands/youtube
       link: https://www.youtube.com/@byuidss
     - icon: fontawesome/brands/linkedin
-      link: https://www.linkedin.com/school/byu-idaho
-
-copyright: Copyright &copy; 2026 J. Hathaway
+      link: https://www.linkedin.com/in/mitchell-mecham
+copyright: Copyright &copy; 2026 Mitchell Mecham

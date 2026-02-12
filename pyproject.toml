@@ -27,3 +27,11 @@ canvas-cli = "canvasconnector.cli:main"
 [tool.uv]
 # Here you can put uv-specific configuration if needed later
 # (you can leave this section out entirely for the simplest case)
+
+[tool.ruff]
+# Ignore docstring formatting rules
+ignore = ["D"]
+
+[tool.ruff.format]
+# Don't format docstrings
+docstring-code-format = false

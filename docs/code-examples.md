@@ -1,91 +1,78 @@
-An example of a codeblock for Python:
+# Code Examples
 
-### Code Blocks
+## Setting Up the Client
 
-=== "Python Code"
+```python
+from canvasconnector import CanvasClient
+from dotenv import load_dotenv
+import os
 
-    ```py title='add_numbers.py' linenums='1' hl_lines='6'
+# Load environment variables from .env file
+load_dotenv()
 
-    # Function to add two numbers
-    def add_two_numbers(num1, num2):
-        return num1 + num2
-
-    # Example usage
-    result = add_two_numbers(5, 3)
-    print('The sum is:', result)
-    ```
-
-=== "The code again"
-
-    ```py title='add_numbers.py' linenums='1' hl_lines='7'
-    # Function to add two numbers
-    def add_two_numbers(num1, num2):
-        return num1 + num2
-
-    # Example usage
-    result = add_two_numbers(5, 3)
-    print('The sum is:', result)
-    ```
-
-!!! note "This is amazing"
-
-    Where are we?
-
-??? note "This is hidden"
-
-    Where are we?
-
-## Flowchart
-
-```mermaid
-graph LR
-  A[Start] --> B{Failure?};
-  B -->|Yes| C[Investigate...];
-  C --> D[Debug];
-  D --> B;
-  B ---->|No| E[Success!];
+client = CanvasClient(
+    api_token=os.getenv("CANVAS_TOKEN"), # e.g., "https://byui.instructure.com"
+    canvas_url=os.getenv("CANVAS_URL"),
+    timezone=os.getenv("TIMEZONE")  # e.g., "America/Denver"
+)
 ```
 
-## Sequence Diagrams
+## Getting Your Courses
 
-```mermaid
-sequenceDiagram
-  autonumber
-  Server->>Terminal: Send request
-  loop Health
-      Terminal->>Terminal: Check for health
-  end
-  Note right of Terminal: System online
-  Terminal-->>Server: Everything is OK
-  Terminal->>Database: Request customer data
-  Database-->>Terminal: Customer data
+```python
+from canvasconnector import get_courses_polars
+
+# Get only current courses
+courses = get_courses_polars(client, current_only=True)
+print(courses)
 ```
 
-``` mermaid
-classDiagram
-  Person <|-- Student
-  Person <|-- Professor
-  Person : +String name
-  Person : +String phoneNumber
-  Person : +String emailAddress
-  Person: +purchaseParkingPass()
-  Address "1" <-- "0..1" Person:lives at
-  class Student{
-    +int studentNumber
-    +int averageMark
-    +isEligibleToEnrol()
-    +getSeminarsTaken()
-  }
-  class Professor{
-    +int salary
-  }
-  class Address{
-    +String street
-    +String city
-    +String state
-    +int postalCode
-    +String country
-    -validate()
-    +outputAsLabel()
-  }
+## Fetching Assignments
+
+```python
+from canvasconnector import get_assignments, get_assignments_all_courses
+
+# Get assignments for a single course
+assignments = get_assignments(
+    client,
+    course_id=398922,
+    assignment_weights=True
+)
+
+# Get assignments for all your courses (parallel processing)
+all_assignments = get_assignments_all_courses(
+    client,
+    courses["course_id"],
+    max_workers=10  # Fetch 10 courses at once
+)
+```
+
+## Finding Upcoming Assignments
+
+```python
+from canvasconnector import get_upcoming_assignments
+
+upcoming = get_upcoming_assignments(
+    client,
+    courses["course_id"],
+    days=14  # Next 2 weeks
+)
+print(upcoming)
+```
+
+## Getting Peer Information
+
+```python
+from canvasconnector import get_all_peers, get_best_friends
+
+# Get all peers from your courses
+peers = get_all_peers(client, courses["course_id"])
+
+# Find your most common classmates
+best_friends = get_best_friends(
+    client,
+    peers,
+    students_only=True
+)
+print(best_friends)
 ```
