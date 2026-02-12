@@ -1,6 +1,27 @@
 # Code Examples
 
-## Setting Up the Client
+## Initial Setup
+
+### 1. Create a `.env` file
+
+Create a `.env` file in your project root with your Canvas credentials:
+
+```plaintext
+# Canvas API Configuration
+CANVAS_TOKEN=your_canvas_api_token_here
+CANVAS_URL=https://byui.instructure.com
+TIMEZONE=America/Denver
+```
+
+**Getting your credentials:**
+
+- **CANVAS_TOKEN**: Canvas → Account → Settings → New Access Token
+- **CANVAS_URL**: Your institution's Canvas URL
+- **TIMEZONE**: Your IANA timezone (e.g., `America/Denver`, `America/New_York`)
+
+**Security**: Add `.env` to your `.gitignore` to keep your API token private.
+
+### 2. Setting Up the Client
 
 ```python
 from canvasconnector import CanvasClient
@@ -11,9 +32,9 @@ import os
 load_dotenv()
 
 client = CanvasClient(
-    api_token=os.getenv("CANVAS_TOKEN"), # e.g., "https://byui.instructure.com"
+    api_key=os.getenv("CANVAS_TOKEN"),
     canvas_url=os.getenv("CANVAS_URL"),
-    timezone=os.getenv("TIMEZONE")  # e.g., "America/Denver"
+    timezone=os.getenv("TIMEZONE")
 )
 ```
 
