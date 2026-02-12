@@ -7,14 +7,23 @@ on:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history for proper git operations
+
       - uses: actions/setup-python@v5
         with:
           python-version: 3.x
+
       - run: pip install mkdocs-material mkdocstrings[python]
+
       - run: mkdocs gh-deploy --force
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
