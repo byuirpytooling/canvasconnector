@@ -3,13 +3,16 @@ requires = ["uv_build >= 0.9.21, <0.10.0"]
 build-backend = "uv_build"
 
 [project]
-name = "pypackage_template"
+name = "canvasconnector"
 version = "0.0.1"
-description = "A small example package managed with uv"
+description = "A Python package for connecting to Canvas LMS API"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "polars==1.37.0",
+    "requests>=2.31.0",      
+    "python-dotenv>=1.0.0",  
+    "polars==1.37.0",        
+    "tzdata>=2024.1",
 ]
 
 [project.optional-dependencies]
@@ -19,7 +22,7 @@ dev = [
 ]
 
 [project.scripts]
-my-uv-cli = "my_uv_package.cli:main"
+canvas-cli = "canvasconnector.cli:main"
 
 [tool.uv]
 # Here you can put uv-specific configuration if needed later
