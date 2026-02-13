@@ -1,4 +1,4 @@
-![Canvas Connector](assets/banner.png)
+![Canvas Connector](docs/assets/banner.png)
 
 # Canvas Connector
 
@@ -80,7 +80,7 @@ client = CanvasClient(
 )
 
 # Get your courses
-courses = get_courses_polars(client)
+courses = get_courses_polars(client, current_only=True)
 print(courses)
 ```
 
