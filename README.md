@@ -1,4 +1,4 @@
-![Canvas Connector](assets/banner.png)
+![Canvas Connector](docs/assets/banner.png)
 
 # Canvas Connector
 
