@@ -8,7 +8,8 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-a_function_tester.py
+test.*
+a_*
 build/
 develop-eggs/
 dist/
@@ -141,3 +142,5 @@ dmypy.json
 
 # MacOS
 .DS_Store
+
+oldenv.txt

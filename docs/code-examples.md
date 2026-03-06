@@ -22,11 +22,8 @@ client = CanvasClient(
 ```python
 from canvasconnector import get_courses_polars
 
-# Get all courses
-courses = get_courses_polars(client)
-
-# Get only current courses
-current_courses = get_courses_polars(client, current_only=True)
+# Get all courses (current only or all)
+courses = get_courses_polars(client, current_only=True)
 print(current_courses)
 ```
 

@@ -61,7 +61,10 @@ def get_assignments(
                 # Submission fields - cast to explicit types
                 pl.col("submission").struct.field("score").cast(pl.Float64).alias("score"),
                 pl.col("submission").struct.field("grade").cast(pl.String).alias("grade"),
+                # Submission type is what YOU submit
                 pl.col("submission").struct.field("submission_type").cast(pl.String).alias("submission_type"),
+                # Submission types the assignment permits.
+                pl.col("submission_types").cast(pl.List(pl.String)).alias("submission_types"),
                 pl.col("submission").struct.field("submitted_at").cast(pl.String).alias("submitted_at"),
                 pl.col("submission").struct.field("excused").cast(pl.Boolean).alias("excused"),
                 pl.col("submission").struct.field("attempt").cast(pl.Int64).alias("attempt"),
