@@ -168,7 +168,8 @@ def like_all_discussion_posts(client: CanvasClient, posts: pl.DataFrame, probabi
     discussion_id = posts["discussion_id"][0]
     course_id = posts["course_id"][0]
     
-    for post_id in posts["entry_id"].drop_nulls().to_list() + posts["reply_id"].drop_nulls().to_list():
+    for _, row in posts.iter_rows(named=True):
+        post_id = row["reply_id"] if row["reply_id"] is not None else row["entry_id"]
         if random.random() < probability:
             like_discussion_post(client, course_id, discussion_id, post_id)
 
