@@ -25,12 +25,12 @@ class CanvasClient:
         self.user_id = None
 
         if verify_connection:
-            self.test_connection()
+            self._test_connection()
 
     def __repr__(self):
         return f"CanvasClient(url={self.canvas_url}, user={self.user_name}, user_id={self.user_id})"
 
-    def test_connection(self) -> bool:
+    def _test_connection(self) -> bool:
         """
         Test if the Canvas API connection is working and store user info.
 

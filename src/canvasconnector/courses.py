@@ -1,4 +1,4 @@
-from .make_client import CanvasClient
+from .client import CanvasClient
 import requests
 from datetime import datetime
 import polars as pl

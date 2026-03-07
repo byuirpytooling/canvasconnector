@@ -6,18 +6,15 @@ from importlib.metadata import version
 __version__ = version("canvasconnector")
 
 
-
-
-from .make_client import CanvasClient
-from .get_courses import get_courses_raw, get_courses_polars
-from .get_assignments import (
+from .client import CanvasClient
+from .courses import get_courses_raw, get_courses_polars
+from .assignments import (
     get_assignments,
     get_assignments_all_courses,
     get_assignment_group,
+    get_upcoming_assignments,
 )
-from .get_peers import get_peers, get_all_peers
-from .get_best_friends import get_best_friends
-from .get_upcoming_assignments import get_upcoming_assignments
+from .peers import get_peers, get_all_peers, get_best_friends
 from .comments import get_submission_comments, post_submission_comment
 from .submissions import submit_assignment, get_assignment_details
 from .discussions import (
@@ -33,16 +30,20 @@ from .discussions import (
 
 
 __all__ = [
+    # Client
     "CanvasClient",
+    # Courses
     "get_courses_raw",
     "get_courses_polars",
+    # Assignments
     "get_assignments",
     "get_assignments_all_courses",
     "get_assignment_group",
+    "get_upcoming_assignments",
+    # Peers
     "get_peers",
     "get_all_peers",
     "get_best_friends",
-    "get_upcoming_assignments",
     # Comments
     "get_submission_comments",
     "post_submission_comment",
@@ -58,5 +59,4 @@ __all__ = [
     "post_discussion_reply",
     "like_discussion_post",
     "like_all_discussion_posts",
-    
 ]

@@ -1,10 +1,11 @@
-from .make_client import CanvasClient
+from .client import CanvasClient
 import polars as pl
 import requests
 from bs4 import BeautifulSoup
 import random
 
 #### GET ####
+
 
 def get_discussions(client: CanvasClient, course_id: int) -> pl.DataFrame:
     response = requests.get(
@@ -39,7 +40,10 @@ def get_discussions(client: CanvasClient, course_id: int) -> pl.DataFrame:
 
     return pl.DataFrame(records)
 
-def get_discussion_entries(client: CanvasClient, course_id: int, discussion_id: int) -> pl.DataFrame:
+
+def get_discussion_entries(
+    client: CanvasClient, course_id: int, discussion_id: int
+) -> pl.DataFrame:
     response = requests.get(
         f"{client.canvas_url}/api/v1/courses/{course_id}/discussion_topics/{discussion_id}/entries",
         headers=client.headers,
@@ -69,7 +73,10 @@ def get_discussion_entries(client: CanvasClient, course_id: int, discussion_id: 
 
     return pl.DataFrame(records)
 
-def get_discussion_replies(client: CanvasClient, course_id: int, discussion_id: int, entry_id: int) -> pl.DataFrame:
+
+def get_discussion_replies(
+    client: CanvasClient, course_id: int, discussion_id: int, entry_id: int
+) -> pl.DataFrame:
     response = requests.get(
         f"{client.canvas_url}/api/v1/courses/{course_id}/discussion_topics/{discussion_id}/entries/{entry_id}/replies",
         headers=client.headers,
@@ -100,18 +107,20 @@ def get_discussion_replies(client: CanvasClient, course_id: int, discussion_id: 
     return pl.DataFrame(records)
 
 
-def get_all_discussion_posts(client: CanvasClient, course_id: int, discussion_id: int) -> pl.DataFrame:
+def get_all_discussion_posts(
+    client: CanvasClient, course_id: int, discussion_id: int
+) -> pl.DataFrame:
     entries = get_discussion_entries(client, course_id, discussion_id)
-    
+
     if entries.is_empty():
         return pl.DataFrame()
-    
+
     entries = entries.with_columns(
         pl.lit(course_id).alias("course_id"),
         pl.lit(discussion_id).alias("discussion_id"),
         pl.lit(None, dtype=pl.Int64).alias("reply_id"),
     )
-    
+
     all_replies = []
     for entry_id in entries["entry_id"].to_list():
         replies = get_discussion_replies(client, course_id, discussion_id, entry_id)
@@ -122,17 +131,20 @@ def get_all_discussion_posts(client: CanvasClient, course_id: int, discussion_id
                 pl.lit(entry_id).alias("entry_id"),
             )
             all_replies.append(replies)
-    
+
     if not all_replies:
         return entries
-    
+
     replies_df = pl.concat(all_replies)
     return pl.concat([entries, replies_df], how="diagonal_relaxed")
 
 
 #### POST ####
 
-def post_discussion_entry(client: CanvasClient, course_id: int, discussion_id: int, message: str) -> dict:
+
+def post_discussion_entry(
+    client: CanvasClient, course_id: int, discussion_id: int, message: str
+) -> dict:
     response = requests.post(
         f"{client.canvas_url}/api/v1/courses/{course_id}/discussion_topics/{discussion_id}/entries",
         headers=client.headers,
@@ -142,7 +154,13 @@ def post_discussion_entry(client: CanvasClient, course_id: int, discussion_id: i
     return response.json()
 
 
-def post_discussion_reply(client: CanvasClient, course_id: int, discussion_id: int, entry_id: int, message: str) -> dict:
+def post_discussion_reply(
+    client: CanvasClient,
+    course_id: int,
+    discussion_id: int,
+    entry_id: int,
+    message: str,
+) -> dict:
     response = requests.post(
         f"{client.canvas_url}/api/v1/courses/{course_id}/discussion_topics/{discussion_id}/entries/{entry_id}/replies",
         headers=client.headers,
@@ -152,10 +170,12 @@ def post_discussion_reply(client: CanvasClient, course_id: int, discussion_id: i
     return response.json()
 
 
-def like_discussion_post(client: CanvasClient, course_id: int, discussion_id: int, post_id: int) -> None:
-    '''
+def like_discussion_post(
+    client: CanvasClient, course_id: int, discussion_id: int, post_id: int
+) -> None:
+    """
     Needs course_id, disscussion_id, and post_id. Post_id can be a entry_id or a reply_id. It works the same for either
-    '''
+    """
     response = requests.post(
         f"{client.canvas_url}/api/v1/courses/{course_id}/discussion_topics/{discussion_id}/entries/{post_id}/rating",
         headers=client.headers,
@@ -164,10 +184,12 @@ def like_discussion_post(client: CanvasClient, course_id: int, discussion_id: in
     response.raise_for_status()
 
 
-def like_all_discussion_posts(client: CanvasClient, posts: pl.DataFrame, probability: float = 0.25) -> None:
+def like_all_discussion_posts(
+    client: CanvasClient, posts: pl.DataFrame, probability: float = 0.25
+) -> None:
     discussion_id = posts["discussion_id"][0]
     course_id = posts["course_id"][0]
-    
+
     for _, row in posts.iter_rows(named=True):
         post_id = row["reply_id"] if row["reply_id"] is not None else row["entry_id"]
         if random.random() < probability:
@@ -175,15 +197,14 @@ def like_all_discussion_posts(client: CanvasClient, posts: pl.DataFrame, probabi
 
 
 #### UPDATE ####
-'''
+"""
 TODO: Let users update their own posts. This can be done easily as each post has a user_id and canvas client stores their user id too
-'''
-
+"""
 
 
 #### DELETE ####
-'''
+"""
 TODO: Similar to update, but more perminant >:). I don't think this one is super important, but maybe it can help if you posted the same thing twice.
 You would be able to delete all but the first one by wrangling and mapping this funciton. 
 Could be useful for automated pulls...
-'''
+"""

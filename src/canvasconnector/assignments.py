@@ -1,10 +1,11 @@
-from .make_client import CanvasClient
-from .utils import convert_canvas_datetime
+from .client import CanvasClient
 
 import requests
 import polars as pl
 from typing import Optional
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from zoneinfo import ZoneInfo
+from datetime import datetime, timedelta
 
 
 def get_assignments(
@@ -156,33 +157,6 @@ def get_assignment_group(client: CanvasClient, course_code: int):
     return groups_clean
 
 
-# def get_assignments_all_courses(client: CanvasClient, course_list: pl.Series):
-#     """Get assignments for all courses and concatenate into one DataFrame."""
-
-#     all_courses_assignments = []
-
-#     for course_id in course_list:
-#         try:
-#             print(f"Fetching assignments for course {course_id}...")
-
-#             # Get assignments with weights for this course
-#             course_assignments = get_assignments(client, course_id, assignment_weights=True)
-
-#             # Only append if we got data back
-#             if len(course_assignments) > 0:
-#                 all_courses_assignments.append(course_assignments)
-
-#         except Exception as e:
-#             print(f"Error fetching course {course_id}: {e}")
-#             continue
-
-#     # Concatenate all course assignments
-#     if not all_courses_assignments:
-#         return pl.DataFrame()
-
-#     return pl.concat(all_courses_assignments)
-
-
 def get_assignments_all_courses(
     client: CanvasClient, course_list: pl.Series, max_workers: int = 5
 ):
@@ -214,3 +188,50 @@ def get_assignments_all_courses(
         return pl.DataFrame()
 
     return pl.concat(all_courses_assignments, how="diagonal")
+
+
+def get_upcoming_assignments(
+    client: CanvasClient,
+    course_ids: pl.Series,
+    days: int = 7,
+    exclude_submitted: bool = True,
+):
+    """Get assignments due within a specified number of days.
+
+    Retrieves assignments from the Canvas LMS API that are due within the next
+    ``days`` days, with optional filtering to exclude already-submitted assignments.
+
+    Args:
+        client: An authenticated CanvasClient instance.
+        course_ids: A Polars Series containing course IDs to fetch assignments from.
+        days: Number of days to look ahead for due assignments. Defaults to 7.
+        exclude_submitted: Whether to filter out assignments that have already been
+            submitted. Defaults to True.
+
+    Returns:
+        A Polars DataFrame containing upcoming assignments with columns including
+        ``due_at``, ``submitted_at``, and other assignment metadata.
+
+    Examples:
+        >>> df_courses = get_courses_polars(client, current_only=True)
+        >>> upcoming = get_assignments_due(client, df_courses['course_id'], days=5)
+        >>> upcoming_all = get_assignments_due(client, df_courses['course_id'],
+        ...                                    days=14, exclude_submitted=False)
+    """
+    assignments = get_assignments_all_courses(client, course_ids)
+
+    tz = ZoneInfo(client.timezone)
+    now = datetime.now(tz).replace(hour=0, minute=0, second=0, microsecond=0)
+    future_date = (now + timedelta(days=days)).replace(hour=23, minute=59, second=59)
+
+    upcoming = assignments.filter(
+        (pl.col("due_at").is_not_null())
+        & (pl.col("due_at").is_between(pl.lit(now), pl.lit(future_date)))
+    )
+
+    if exclude_submitted:
+        upcoming = upcoming.filter(
+            pl.col("submitted_at").is_null()  # or check workflow_state != "submitted"
+        )
+
+    return upcoming
