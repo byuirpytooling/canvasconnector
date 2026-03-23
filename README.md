@@ -4,6 +4,8 @@
 
 A Python package for easily connecting to the Canvas LMS API.
 
+[Documentation Site](https://byuirpytooling.github.io/canvasconnector/)
+
 ## Features
 
 - Easy authentication with Canvas API
