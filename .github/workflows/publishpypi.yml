@@ -3,6 +3,7 @@ name: Upload Python Package
 on:
   release:
     types: [published]
+  workflow_dispatch: # adds a manual "Run workflow" button in GitHub Actions. Good for testing
 
 permissions:
   contents: read
@@ -19,8 +20,8 @@ jobs:
 
       - name: Build release distributions
         run: |
-          python -m pip install build
-          python -m build
+          pip install uv
+          uv build
 
       - name: Upload distributions
         uses: actions/upload-artifact@v4
@@ -32,9 +33,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: release-build
     environment:
-      name: pypi  # 👈 This is what creates the manual approval gate
+      name: pypi
     permissions:
-      id-token: write
+      id-token: write # this is what enables OIDC
     steps:
       - name: Retrieve release distributions
         uses: actions/download-artifact@v4
@@ -46,4 +47,4 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: dist/
-          password: ${{ secrets.PYPI_TOKEN }}
+          # no password needed!
